@@ -12,6 +12,12 @@
 
 #define LOG_TIME_FMT "%02d:%02d:%02d "
 #define LOG_RESET "\e[0m\n"
+#define CHECK(condition, FMT, ...) if (!(condition)) { \
+    LogFatal(FMT, ##__VA_ARGS__);          \
+}
+#define CHECK_EQ(x, y, FMT, ...) CHECK(x == y, FMT, ##__VA_ARGS__)
+#define CHECK_NEQ(x, y, FMT, ...) CHECK(x != y, FMT, ##__VA_ARGS__)
+#define CHECK_NOT_NULL(x, FMT, ...) CHECK_NEQ(x, NULL, FMT, ##__VA_ARGS__)
 #define LogFatal(FMT, ...) do {\
     LogError(FMT, ##__VA_ARGS__);\
     exit(1);                   \
@@ -20,9 +26,9 @@
 #define LogWarn(FMT, ...) Log(stderr, "\e[0;33m" /* YELLOW */ LOG_TIME_FMT FMT LOG_RESET, ##__VA_ARGS__)
 #define LogInfo(FMT, ...) Log(stdout, "\e[0;36m" /* CYAN */ LOG_TIME_FMT FMT LOG_RESET, ##__VA_ARGS__)
 #ifdef DEBUG
-    #define LogDebug(FMT, ...) Log(stdout, "\e[0;37m" /* WHITE */ LOG_TIME_FMT FMT LOG_RESET, ##__VA_ARGS__)
+#define LogDebug(FMT, ...) Log(stdout, "\e[0;37m" /* WHITE */ LOG_TIME_FMT FMT LOG_RESET, ##__VA_ARGS__)
 #else
-    #define LogDebug(FMT, ...)
+#define LogDebug(FMT, ...)
 #endif
 
 // Log to the fp. fmt must have LOG_TIME_FMT in it

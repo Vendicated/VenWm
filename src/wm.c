@@ -42,18 +42,14 @@ int handleErr(Display *display, XErrorEvent *event) {
 
 void WmInit(const char *displayName) {
     mDisplay = XOpenDisplay(displayName);
-    if (mDisplay == NULL) {
-        LogFatal("Failed to open display %s", XDisplayName(displayName));
-    }
+    CHECK_NOT_NULL(mDisplay, "Failed to open display %s", XDisplayName(displayName));
     mRoot = XDefaultRootWindow(mDisplay);
 }
 
 
 void WmRun() {
     XSetErrorHandler(&handleInitErr);
-    XSelectInput(mDisplay, mRoot, SubstructureRedirectMask | SubstructureNotifyMask | KeyPressMask);
-    XGrabKey(mDisplay, XKeysymToKeycode(mDisplay, XK_P), ControlMask | LockMask, mRoot, false, GrabModeAsync,
-             GrabModeAsync);
+    XSelectInput(mDisplay, mRoot, SubstructureRedirectMask | SubstructureNotifyMask);
     XSync(mDisplay, false);
 
     XSetErrorHandler(&handleErr);
@@ -63,12 +59,8 @@ void WmRun() {
     Window *children;
     unsigned int childrenCount;
 
-    if (UNLIKELY(!XQueryTree(mDisplay, mRoot, &root, &parent, &children, &childrenCount))) {
-        LogFatal("Failed to query X tree");
-    };
-    if (UNLIKELY(root != mRoot)) {
-        LogFatal("Root returned by tree query differs from own root window, aborting.");
-    }
+    CHECK(XQueryTree(mDisplay, mRoot, &root, &parent, &children, &childrenCount), "Failed to query X tree");
+    CHECK_EQ(root, mRoot, "Root returned by tree query differs from own root window, aborting.");
 
     for (int i = 0; i < childrenCount; i++) {
         // TODO
