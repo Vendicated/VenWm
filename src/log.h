@@ -10,7 +10,6 @@
 #include <time.h>
 #include <stdarg.h>
 
-#define LOG_TIME_FMT "%02d:%02d:%02d "
 #define LOG_RESET "\e[0m\n"
 #define CHECK(condition, FMT, ...) if (!(condition)) { \
     LogFatal(FMT, ##__VA_ARGS__);          \
@@ -22,16 +21,16 @@
     LogError(FMT, ##__VA_ARGS__);\
     exit(1);                   \
 } while (0)
-#define LogError(FMT, ...) Log(stderr, "\e[0;31m" /* RED */ LOG_TIME_FMT FMT LOG_RESET, ##__VA_ARGS__)
-#define LogWarn(FMT, ...) Log(stderr, "\e[0;33m" /* YELLOW */ LOG_TIME_FMT FMT LOG_RESET, ##__VA_ARGS__)
-#define LogInfo(FMT, ...) Log(stdout, "\e[0;36m" /* CYAN */ LOG_TIME_FMT FMT LOG_RESET, ##__VA_ARGS__)
+#define LogError(FMT, ...) Log(stderr, "\e[0;31m" /* RED */ FMT LOG_RESET, ##__VA_ARGS__)
+#define LogWarn(FMT, ...) Log(stderr, "\e[0;33m" /* YELLOW */ FMT LOG_RESET, ##__VA_ARGS__)
+#define LogInfo(FMT, ...) Log(stdout, "\e[0;36m" /* CYAN */ FMT LOG_RESET, ##__VA_ARGS__)
 #ifdef DEBUG
-#define LogDebug(FMT, ...) Log(stdout, "\e[0;37m" /* WHITE */ LOG_TIME_FMT FMT LOG_RESET, ##__VA_ARGS__)
+#define LogDebug(FMT, ...) Log(stdout, "\e[0;37m" /* WHITE */ FMT LOG_RESET, ##__VA_ARGS__)
 #else
 #define LogDebug(FMT, ...)
 #endif
 
-// Log to the fp. fmt must have LOG_TIME_FMT in it
+// Log to the fp. fmt must have extra %s for date string in it
 void Log(FILE *fp, const char *fmt, ...);
 
 #endif //VENWM_LOG_H
